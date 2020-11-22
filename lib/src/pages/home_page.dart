@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'dart:ui';
 
-class HomePage extends StatelessWidget {
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  String quote = 'Hola mundo';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +29,7 @@ class HomePage extends StatelessWidget {
         shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20.0) ),
         child: Text('Give me a new Quote', style: TextStyle( color: Colors.black,  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8)),
         onPressed: (){
-          print('Next Quote');
+          _newQuote();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -134,8 +142,7 @@ class HomePage extends StatelessWidget {
               Text('Happiness', style: categoryFontStyle),
             ]
           ),
-          // SizedBox(height: 30.0),
-          Text('Proident proident cupidatat ad anim id fugiat laboris. Voluptate laboris tempor duis velit veniam quis. Incididunt proident amet sit incididunt culpa anim quis.', style: quoteFontStyle, textAlign: TextAlign.center ,),
+          Text(quote, style: quoteFontStyle, textAlign: TextAlign.center ,),
           Text('- ' + 'Jesus Medina ' + ' -', style: authorFontStyle,)
         ]
       ),
@@ -143,4 +150,9 @@ class HomePage extends StatelessWidget {
 
   }
 
+  void _newQuote(){
+    setState(() {
+      quote = 'Haz presionado el boton';
+    });
+  }
 }
