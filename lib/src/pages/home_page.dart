@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -12,6 +13,9 @@ class _HomePageState extends State<HomePage> {
   String phrase = 'Your new quote will be appear here';
   String tag = '';
   String author = 'Welcome';
+
+  Color colorPrimario = Color.fromRGBO(36, 254, 65, 1.0);
+  Color colorSecundario = Color.fromRGBO(40, 60, 134, 1.0);
 
   Future getQuote() async {
     final response = await http.get('http://api.quotable.io/random');
@@ -29,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    _newQuote();
+    getQuote();
 
     return Scaffold(
       body: Stack(
@@ -56,7 +60,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _backgroundApp(){
 
-    return Container(
+    return AnimatedContainer(
+      duration: Duration( seconds: 3 ),
       height: double.infinity,
       width: double.infinity,
       decoration: BoxDecoration(
@@ -64,8 +69,8 @@ class _HomePageState extends State<HomePage> {
           begin: FractionalOffset(1.0, 0.0),
           end: FractionalOffset(0.0, 1),
           colors: <Color>[
-            Color.fromRGBO(36, 254, 65, 1.0),
-            Color.fromRGBO(40, 60, 134, 1.0),
+            colorPrimario,
+            colorSecundario,
           ]
         ),
       ),
@@ -102,8 +107,8 @@ class _HomePageState extends State<HomePage> {
         angle: 0,
         child: Image(
           image: AssetImage('assets/img/card4.jpg'),
-          width: 350.0,
-          // height: 600.0,
+          // width: 400.0,
+          height: 600.0,
           fit: BoxFit.cover,
         ),
       )
@@ -117,9 +122,9 @@ class _HomePageState extends State<HomePage> {
     return Center(
       child: Container(
         clipBehavior: Clip.antiAlias,
-        height: 420.0,
+        height: 500.0,
         width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: 60),
+        margin: EdgeInsets.symmetric(horizontal: 50),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: <BoxShadow>[
@@ -145,7 +150,7 @@ class _HomePageState extends State<HomePage> {
   Widget _itemsTarjeta(){
 
     final categoryFontStyle = TextStyle( color: Color.fromRGBO(40, 60, 134, 1.0),  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8,),
-          quoteFontStyle = TextStyle( color: Colors.black87,  fontSize: 22, fontWeight: FontWeight.w300, letterSpacing: 1.8),
+          quoteFontStyle = TextStyle( color: Colors.black87,  fontSize: 20, fontWeight: FontWeight.w300, letterSpacing: 1.8),
           authorFontStyle = TextStyle( color: Colors.brown[700],  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8);
 
 
@@ -158,7 +163,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Icon( Icons.format_quote, color: Color.fromRGBO(40, 60, 134, 1.0), size: 40.0,),
-              SizedBox( width: 40.0),
+              SizedBox( width: 60.0),
               Text(tag.replaceAll('-', ' '), style: categoryFontStyle),
             ]
           ),
@@ -170,11 +175,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _newQuote(){
+
+    final random = Random();
+
     setState((){
       getQuote();
-      // phrase;
-      // tag;
-      // author;
+      colorPrimario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
+      colorSecundario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
     });
   }
 }
