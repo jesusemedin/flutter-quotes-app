@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'dart:ui';
-
-
+import 'package:http/http.dart' as http;
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -9,10 +9,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  String quote = 'Hola mundo';
+  String phrase = '';
+  String tag = '';
+  String author = 'Welcome';
+
+  Future getQuote() async {
+    final response = await http.get('http://api.quotable.io/random');
+    final quote = json.decode(response.body);
+
+    phrase = quote['content'];
+    tag = quote['tags'][0];
+    author = quote['author'];
+    
+    print(phrase);
+    print(tag);
+    print(author);
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    _newQuote();
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -68,7 +86,8 @@ class _HomePageState extends State<HomePage> {
               iconSize: 30.0,
               tooltip: 'Search',
               splashColor: Colors.white,
-              onPressed: (){}
+              onPressed: (){
+              }
             )
           ],
         ),
@@ -83,8 +102,8 @@ class _HomePageState extends State<HomePage> {
         angle: 0,
         child: Image(
           image: AssetImage('assets/img/card4.jpg'),
-          // width: 350.0,
-          height: 500.0,
+          width: 350.0,
+          // height: 600.0,
           fit: BoxFit.cover,
         ),
       )
@@ -129,6 +148,7 @@ class _HomePageState extends State<HomePage> {
           quoteFontStyle = TextStyle( color: Colors.black87,  fontSize: 22, fontWeight: FontWeight.w300, letterSpacing: 1.8),
           authorFontStyle = TextStyle( color: Colors.brown[700],  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8);
 
+
     return Container(
       padding: EdgeInsets.only(top: 10.0, right: 10.0, bottom: 25.0, left: 10.0),
       child: Column(
@@ -139,20 +159,22 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Icon( Icons.format_quote, color: Color.fromRGBO(40, 60, 134, 1.0), size: 40.0,),
               SizedBox( width: 40.0),
-              Text('Happiness', style: categoryFontStyle),
+              Text(tag.replaceAll('-', ' '), style: categoryFontStyle),
             ]
           ),
-          Text(quote, style: quoteFontStyle, textAlign: TextAlign.center ,),
-          Text('- ' + 'Jesus Medina ' + ' -', style: authorFontStyle,)
+          Text(phrase, style: quoteFontStyle, textAlign: TextAlign.center , overflow: TextOverflow.fade,),
+          Text('- ' + author + ' -', style: authorFontStyle,)
         ]
       ),
     );
-
   }
 
   void _newQuote(){
-    setState(() {
-      quote = 'Haz presionado el boton';
+    setState((){
+      getQuote();
+      // phrase;
+      // tag;
+      // author;
     });
   }
 }
