@@ -9,7 +9,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  String phrase = '';
+  String phrase = 'Your new quote will be appear here';
   String tag = '';
   String author = 'Welcome';
 
