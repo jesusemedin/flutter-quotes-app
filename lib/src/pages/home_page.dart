@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'dart:ui';
-import 'package:http/http.dart' as http;
 import 'dart:math';
+
+import 'package:quotes_app/providers/quote_provider.dart';
+import 'package:quotes_app/widgets/items_tarjeta.dart';
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -10,30 +12,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  String phrase = 'Your new quote will be appear here';
-  String tag = '';
-  String author = 'Welcome';
+  final quoteProvider = new QuoteProvider();
 
   Color colorPrimario = Color.fromRGBO(36, 254, 65, 1.0);
   Color colorSecundario = Color.fromRGBO(40, 60, 134, 1.0);
-
-  Future getQuote() async {
-    final response = await http.get('http://api.quotable.io/random');
-    final quote = json.decode(response.body);
-
-    phrase = quote['content'];
-    tag = quote['tags'][0];
-    author = quote['author'];
-    
-    print(phrase);
-    print(tag);
-    print(author);
-  }
+  String backgroundImage = 'card5';
 
   @override
   Widget build(BuildContext context) {
-
-    getQuote();
 
     return Scaffold(
       body: Stack(
@@ -51,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20.0) ),
         child: Text('Give me a new Quote', style: TextStyle( color: Colors.black,  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8)),
         onPressed: (){
-          _newQuote();
+          newQuote();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -106,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       child: Transform.rotate(
         angle: 0,
         child: Image(
-          image: AssetImage('assets/img/card4.jpg'),
+          image: AssetImage('assets/img/$backgroundImage.jpg'),
           // width: 400.0,
           height: 600.0,
           fit: BoxFit.cover,
@@ -149,39 +135,31 @@ class _HomePageState extends State<HomePage> {
 
   Widget _itemsTarjeta(){
 
-    final categoryFontStyle = TextStyle( color: Color.fromRGBO(40, 60, 134, 1.0),  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8,),
-          quoteFontStyle = TextStyle( color: Colors.black87,  fontSize: 20, fontWeight: FontWeight.w300, letterSpacing: 1.8),
-          authorFontStyle = TextStyle( color: Colors.brown[700],  fontSize: 16, fontWeight: FontWeight.w300, letterSpacing: 1.8);
-
-
-    return Container(
-      padding: EdgeInsets.only(top: 10.0, right: 10.0, bottom: 25.0, left: 10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Icon( Icons.format_quote, color: Color.fromRGBO(40, 60, 134, 1.0), size: 40.0,),
-              SizedBox( width: 60.0),
-              Text(tag.replaceAll('-', ' '), style: categoryFontStyle),
-            ]
-          ),
-          Text(phrase, style: quoteFontStyle, textAlign: TextAlign.center , overflow: TextOverflow.fade,),
-          Text('- ' + author + ' -', style: authorFontStyle,)
-        ]
-      ),
+    return FutureBuilder(
+      future: quoteProvider.getQuote(),
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        if (snapshot.hasData) {
+          final quote = snapshot.data;
+          return ItemsTarjeta(quote: quote);
+        } else {
+          return Container(
+            height: 400.0,
+            child: Center(
+              child: CircularProgressIndicator()
+            )
+          );
+        }
+      },
     );
   }
 
-  void _newQuote(){
-
+  void newQuote(){
     final random = Random();
-
-    setState((){
-      getQuote();
-      colorPrimario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
-      colorSecundario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
+    setState(() {
+    quoteProvider.getQuote();
+    colorPrimario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
+    colorSecundario = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1.0);
+    backgroundImage = 'card${random.nextInt(5)}';
     });
   }
 }
